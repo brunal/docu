@@ -38,6 +38,7 @@ function Docu(data_json) {
         }
         delete data_json.nodes[node_name].main;
         node.content = data_json.nodes[node_name];
+        node.name = node_name;
         nodes[node_name] = node;
     }
 
@@ -52,7 +53,9 @@ function Docu(data_json) {
             to.prev_minor.push(from);
         }
     });
+    this.nodes = nodes;
     this.root = nodes[data_json.root];
+    this.current_node = this.root;
 };
 
 Docu.prototype.main_narration = function() {
@@ -64,5 +67,18 @@ Docu.prototype.main_narration = function() {
     }
     return narr;
 };
+
+Docu.prototype.init = function(url) {
+    // take #+ part of the url
+    var hash = url.location.hash;
+    if(hash !== "")
+        this.current_node = this.nodes[hash.substr(1)] || this.root;
+}
+
+Docu.prototype.setCurrentNode = function(node, window) {
+    this.current_node = node;
+    if(window)
+        window.location.hash = "#" + node.name;
+}
 
 module.exports = Docu;
