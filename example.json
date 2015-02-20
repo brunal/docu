@@ -1,0 +1,11 @@
+{
+    "nodes": {"node1": {"main": true, "picture": ""},
+              "node2": {"main": true, "picture": ""},
+              "node1-1": {"main": false, "picture": ""}
+        ],
+        "root": "node1",
+        "edges": [["node1", "node2"],
+                  ["node1", "node1-1"],
+                  ["node1-1", "node2"]
+        ]
+    }
