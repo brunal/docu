@@ -31,10 +31,11 @@ function Docu(data_json, url) {
     // parse data into a graph
     var nodes = {};
     for(var node_name in data_json.nodes) {
+        var node;
         if(data_json.nodes[node_name].main) {
-            var node = new MainNode();
+            node = new MainNode();
         } else {
-            var node = new Node();
+            node = new Node();
         }
         delete data_json.nodes[node_name].main;
         node.content = data_json.nodes[node_name];
@@ -56,7 +57,7 @@ function Docu(data_json, url) {
     this.nodes = nodes;
     this.root = nodes[data_json.root];
     this.current_node = this.nodes[url.hash.substr(1)] || this.root;
-};
+}
 
 Docu.prototype.main_narration = function() {
     var narr = [];
@@ -72,6 +73,6 @@ Docu.prototype.setCurrentNode = function(node, window) {
     this.current_node = node;
     if(window)
         window.location.hash = "#" + node.name;
-}
+};
 
 module.exports = Docu;
