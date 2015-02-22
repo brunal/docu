@@ -27,7 +27,7 @@ MainNode.prototype.isLast = function() {
     return this.next === null;
 };
 
-function Docu(data_json) {
+function Docu(data_json, url) {
     // parse data into a graph
     var nodes = {};
     for(var node_name in data_json.nodes) {
@@ -55,7 +55,7 @@ function Docu(data_json) {
     });
     this.nodes = nodes;
     this.root = nodes[data_json.root];
-    this.current_node = this.root;
+    this.current_node = this.nodes[url.hash.substr(1)] || this.root;
 };
 
 Docu.prototype.main_narration = function() {
@@ -67,11 +67,6 @@ Docu.prototype.main_narration = function() {
     }
     return narr;
 };
-
-Docu.prototype.init = function(url) {
-    if(url.hash !== "")
-        this.current_node = this.nodes[url.hash.substr(1)] || this.root;
-}
 
 Docu.prototype.setCurrentNode = function(node, window) {
     this.current_node = node;

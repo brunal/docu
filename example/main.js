@@ -11,7 +11,6 @@ var data = {
               ["node1-1", "node2"]]
 };
 
-d = new Docu(data);
-d.init(window.location);
+d = new Docu(data, window.location);
 var node = d.current_node;
 document.getElementById("sandbox").src = node.content.picture;
