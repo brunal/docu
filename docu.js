@@ -69,10 +69,8 @@ Docu.prototype.main_narration = function() {
 };
 
 Docu.prototype.init = function(url) {
-    // take #+ part of the url
-    var hash = url.location.hash;
-    if(hash !== "")
-        this.current_node = this.nodes[hash.substr(1)] || this.root;
+    if(url.hash !== "")
+        this.current_node = this.nodes[url.hash.substr(1)] || this.root;
 }
 
 Docu.prototype.setCurrentNode = function(node, window) {
