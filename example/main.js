@@ -12,5 +12,5 @@ var data = {
 };
 
 d = new Docu(data, window.location);
-var node = d.current_node;
+var node = d.currentNode;
 document.getElementById("sandbox").src = node.content.picture;

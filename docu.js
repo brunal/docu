@@ -2,8 +2,8 @@
 
 var Node = function() {
     this.content = null;
-    this.next_minor = [];
-    this.prev_minor = [];
+    this.nextMinor = [];
+    this.prevMinor = [];
 };
 
 var Edge = function(n1, n2) {
@@ -50,16 +50,17 @@ function Docu(data_json, url) {
             from.next = to;
             to.prev = from;
         } else {
-            from.next_minor.push(to);
-            to.prev_minor.push(from);
+            from.nextMinor.push(to);
+            to.prevMinor.push(from);
         }
     });
     this.nodes = nodes;
     this.root = nodes[data_json.root];
-    this.current_node = this.nodes[url.hash.substr(1)] || this.root;
+    var hash = url && url.hash || "";
+    this.currentNode = this.nodes[hash.substr(1)] || this.root;
 }
 
-Docu.prototype.main_narration = function() {
+Docu.prototype.mainNarration = function() {
     var narr = [];
     var node = this.root;
     while(node !== null) {
@@ -70,7 +71,7 @@ Docu.prototype.main_narration = function() {
 };
 
 Docu.prototype.setCurrentNode = function(node, window) {
-    this.current_node = node;
+    this.currentNode = node;
     if(window)
         window.location.hash = "#" + node.name;
 };
