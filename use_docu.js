@@ -1,6 +1,7 @@
 "use strict";
 
 var Docu = require("./docu.js");
+var xhr = require("xhr");
 
 function DocuDisplay(container, data, nodeLoader) {
     this.docu = new Docu(data, window.location);
@@ -21,14 +22,18 @@ DocuDisplay.prototype.setUpDOM = function(container) {
     return main;
 };
 
-DocuDisplay.setUp = function() {
+DocuDisplay.setUp = function(nodeLoader, then) {
     // static method that serves as a constructor
-    // generate docu from #docu-display with its docu_data tag
+    // generate docu from #docu-display with its docu-data tag
+    // FIXME alors take additional setUpDOM function?
     var container = document.getElementById("docu-display");
-    var data = require(container.docu_data);
-    var dd = new DocuDisplay(container, data);
-    dd.loadNode(dd.docu.currentNode);
-    return dd;
+    return xhr({"uri": container.attributes["docu-data"].value},
+               function(err, resp, body) {
+                   var data = JSON.parse(body);
+                   var dd = new DocuDisplay(container, data, nodeLoader);
+                   dd.loadNode(dd.docu.currentNode);
+                   then(dd);
+               });
 };
 
 DocuDisplay.prototype.goToNode = function(node) {
