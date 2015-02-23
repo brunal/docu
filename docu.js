@@ -5,14 +5,14 @@
 
 var Node = function() {
     this.content = null;
+    this.name = null;
     this.nextMinor = [];
     this.prevMinor = [];
 };
 
-var Edge = function(n1, n2) {
-    this.from = n1;
-    this.to = n2;
-};
+Node.prototype.url = function() {
+    return '#' + this.name;
+}
 
 function MainNode() {
     Node.call(this);
@@ -76,7 +76,7 @@ Docu.prototype.mainNarration = function() {
 Docu.prototype.setCurrentNode = function(node, window) {
     this.currentNode = node;
     if(window)
-        window.location.hash = "#" + node.name;
+        window.location.hash = node.url();
 };
 
 module.exports = Docu;

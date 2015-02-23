@@ -8,27 +8,41 @@ var xhr = require("xhr");
 
 function DocuDisplay(container, data, nodeLoader) {
     this.docu = new Docu(data, window.location);
-    this.container = this.setUpDOM(container);
+    this.setUpDOM(container);
     this.nodeLoader = nodeLoader;
 }
 
 DocuDisplay.prototype.setUpDOM = function(container) {
-    var leftNav = document.createElement("div");
-    leftNav.classList.add("docu-left-nav");
-    var main = document.createElement("div");
-    main.classList.add("docu-main");
-    var rightNav = document.createElement("div");
-    rightNav.classList.add("docu-right-nav");
-    container.appendChild(leftNav);
-    container.appendChild(main);
-    container.appendChild(rightNav);
-    return main;
+
+    var dd = this;
+    function loadFromHref(event) {
+        var name = this.attributes["href"].value.substr(1);
+        if(!name)
+            return;
+        dd.goToNode(dd.docu.nodes[name]);
+        event.preventDefault();
+    }
+
+    this.leftNav = document.createElement("a");
+    this.leftNav.classList.add("docu-left-nav");
+    this.leftNav.addEventListener("click", loadFromHref);
+
+    this.container = document.createElement("div");
+    this.container.classList.add("docu-main");
+
+    this.rightNav = document.createElement("a");
+    this.rightNav.classList.add("docu-right-nav");
+    this.rightNav.addEventListener("click", loadFromHref);
+
+    container.appendChild(this.leftNav);
+    container.appendChild(this.container);
+    container.appendChild(this.rightNav);
 };
 
 DocuDisplay.setUp = function(nodeLoader, then) {
     // static method that serves as a constructor
     // generate docu from #docu-display with its docu-data tag
-    // FIXME alors take additional setUpDOM function?
+    // FIXME take additional setUpDOM function?
     var container = document.getElementById("docu-display");
     return xhr({"uri": container.attributes["docu-data"].value},
                function(err, resp, body) {
@@ -40,6 +54,11 @@ DocuDisplay.setUp = function(nodeLoader, then) {
 };
 
 DocuDisplay.prototype.goToNode = function(node) {
+    this.leftNav.href = ""
+    this.leftNav.innerHTML = ""
+    this.rightNav.href = ""
+    this.rightNav.innerHTML = ""
+
     if(this.docu.currentNode.content.locationId) {
         // restore it to its original location
         var sentinel = document.getElementById("docu-sentinel");
@@ -51,11 +70,20 @@ DocuDisplay.prototype.goToNode = function(node) {
             this.container.removeChild(this.container.lastChild);
         }
     }
-    this.docu.setCurrentNode(node);
+    this.docu.setCurrentNode(node, window);
     this.loadNode(node);
 };
 
 DocuDisplay.prototype.loadNode = function(node) {
+    if(node.prev) {
+        this.leftNav.href = node.prev.url();
+        this.leftNav.innerHTML = node.prev.name;
+    }
+    if(node.next) {
+        this.rightNav.href = node.next.url();
+        this.rightNav.innerHTML = node.next && node.next.name;
+    }
+
     if(node.content.locationId) {
         // everything is in a node, copy its content in the docu-main div
         // and put a mark on its original location

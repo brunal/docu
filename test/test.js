@@ -105,9 +105,9 @@ describe('DocuDisplay', function() {
     it('setup dom', function() {
         var div = document.createElement("div");
         DocuDisplay.prototype.setUpDOM(div);
-        assert.equal(div.innerHTML, '<div class="docu-left-nav"></div>' +
+        assert.equal(div.innerHTML, '<a class="docu-left-nav"></a>' +
                                     '<div class="docu-main"></div>' +
-                                    '<div class="docu-right-nav"></div>')
+                                    '<a class="docu-right-nav"></a>')
     });
 
     it('constructor', function() {
