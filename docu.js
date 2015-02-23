@@ -1,4 +1,7 @@
-// use strict;
+"use strict";
+/* Core docu code.
+ * Load a json description, build a graph and offer navigation.
+ */
 
 var Node = function() {
     this.content = null;

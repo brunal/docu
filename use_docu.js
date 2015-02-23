@@ -1,4 +1,7 @@
 "use strict";
+/* Docu display facility.
+ * Play with the DOM.
+ */
 
 var Docu = require("./docu.js");
 var xhr = require("xhr");
