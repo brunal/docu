@@ -6,13 +6,36 @@
 var Docu = require("./docu.js");
 var xhr = require("xhr");
 
-function DocuDisplay(container, data, nodeLoader) {
-    this.docu = new Docu(data, window.location);
-    this.setUpDOM(container);
-    this.nodeLoader = nodeLoader;
+/**
+ * Utility to manipulate a Docu
+ *
+ * @class DocuDisplay
+ * @constructor
+ * @param {Object} config Keys can be container, nodeLoader, domSetup, data or
+ * data_source
+ */
+function DocuDisplay(config) {
+    if(!config.container)
+        config.container = document.getElementById("docu-display");
+
+    if(!config.data) {
+        if(!config.data_source) {
+            config.data_source = config.container.attributes["docu-data"].value;
+            console.log("Auto-detected data source: " + config.data_source);
+        }
+        xhr({"uri": config.data_source, "sync": true},
+            function(err, resp, body) {
+                config.data = JSON.parse(body);
+            });
+    }
+
+    this.docu = new Docu(config.data, window.location);
+    this.setUpDOM(config.container, config.domSetup);
+    this.nodeLoader = config.nodeLoader;
+    this.loadNode(this.docu.currentNode);
 }
 
-DocuDisplay.prototype.setUpDOM = function(container) {
+DocuDisplay.prototype.setUpDOM = function(container, additionalSetup) {
 
     var dd = this;
     function loadFromHref(event) {
@@ -37,20 +60,9 @@ DocuDisplay.prototype.setUpDOM = function(container) {
     container.appendChild(this.leftNav);
     container.appendChild(this.container);
     container.appendChild(this.rightNav);
-};
 
-DocuDisplay.setUp = function(nodeLoader, then) {
-    // static method that serves as a constructor
-    // generate docu from #docu-display with its docu-data tag
-    // FIXME take additional setUpDOM function?
-    var container = document.getElementById("docu-display");
-    return xhr({"uri": container.attributes["docu-data"].value},
-               function(err, resp, body) {
-                   var data = JSON.parse(body);
-                   var dd = new DocuDisplay(container, data, nodeLoader);
-                   dd.loadNode(dd.docu.currentNode);
-                   then(dd);
-               });
+    if(additionalSetup)
+        additionalSetup(container);
 };
 
 DocuDisplay.prototype.goToNode = function(node) {

@@ -107,13 +107,25 @@ describe('DocuDisplay', function() {
         DocuDisplay.prototype.setUpDOM(div);
         assert.equal(div.innerHTML, '<a class="docu-left-nav"></a>' +
                                     '<div class="docu-main"></div>' +
-                                    '<a class="docu-right-nav"></a>')
+                                    '<a class="docu-right-nav"></a>');
+
+        var foo = 0;
+        DocuDisplay.prototype.setUpDOM(div, function() { foo = 2; });
+        assert.equal(foo, 2);
     });
 
     it('constructor', function() {
         var container = document.createElement("div");
         var nodeLoader = function(node) {};
-        var dd = new DocuDisplay(container, {}, nodeLoader);
+        // path DocuDisplay.loadNode()
+        var loadNode = DocuDisplay.prototype.loadNode;
+        DocuDisplay.prototype.loadNode = function () {};
+        var dd = new DocuDisplay({"container": container,
+                                  "data": {},
+                                  "nodeLoader": nodeLoader});
+        // restore it
+        DocuDisplay.prototype.loadNode = loadNode;
+
         assert.equal(dd.nodeLoader, nodeLoader);
         assert.equal(dd.container.outerHTML, '<div class="docu-main"></div>');
         assert.equal(dd.container, container.children[1]);
@@ -133,8 +145,9 @@ describe('DocuDisplay', function() {
             this.container.appendChild(text);
         };
 
-        var dd = new DocuDisplay(container, data, nodeLoader);
-        dd.loadNode(dd.docu.currentNode);
+        var dd = new DocuDisplay({"container": container,
+                                  "data": data,
+                                  "nodeLoader": nodeLoader});
         assert.equal(dd.container.innerHTML, "loaded node with picture hi.png");
 
         assert.throws(function() { dd.goToNode(dd.docu.nodes["node2"]) },
